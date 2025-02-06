@@ -6,7 +6,8 @@ set(CMAKE_AUTOMOC ON)
 
 find_package(Qt6 COMPONENTS Core Gui Widgets REQUIRED)
 
-file(GLOB SRC_FILES
+file(GLOB SOURCES_FILES
+        ${PROJECT_SOURCE_DIR}/src
         ${PROJECT_SOURCE_DIR}/src/*.cpp
         ${PROJECT_SOURCE_DIR}/src/core/*.cpp
         ${PROJECT_SOURCE_DIR}/src/gui/*.cpp
@@ -19,7 +20,7 @@ file(GLOB HEADER_FILES
         ${PROJECT_SOURCE_DIR}/src/gui/*.hpp
 )
 
-add_executable(ElectrostaticHalftoning ${SRC_FILES} ${HEADER_FILES})
+add_executable(ElectrostaticHalftoning ${SOURCES_FILES} ${HEADER_FILES})
 target_include_directories(ElectrostaticHalftoning PUBLIC ${HEADER_FILES})
 
 target_link_libraries(ElectrostaticHalftoning Qt::Core Qt::Gui Qt::Widgets)
