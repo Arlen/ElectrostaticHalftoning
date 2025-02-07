@@ -30,11 +30,12 @@ namespace
         return counts;
     }
 
-    auto dotSizeEdit(QWidget* parent = nullptr)
+    auto radiusEdit(QWidget* parent = nullptr)
     {
         auto* le = new QLineEdit(parent);
-        auto* validator = new QDoubleValidator(le);
-        validator->setRange(0.25, 8.0);
+        auto* validator = new QDoubleValidator(0.25, 8.0, 2, le);
+        validator->setNotation(QDoubleValidator::StandardNotation);
+        validator->setLocale(QLocale::C);
         le->setValidator(validator);
         le->setText("1.0");
 
@@ -55,8 +56,8 @@ ControlPanel::ControlPanel(QWidget* parent)
     auto* particles  = new Slider("Particles", powerOfTwos(16, 8), this);
     auto* iterations = new Slider("Iterations", powerOfTwos(13), this);
 
-    auto* sizeLabel = new QLabel("Size", this);
-    auto* dotSize = dotSizeEdit(this);
+    auto* radiusLabel = new QLabel("Radius", this);
+    _radiusEdit = radiusEdit(this);
 
     /// connections
     connect(particles, &Slider::valueChanged, [this](QVariant val) {
@@ -69,13 +70,7 @@ ControlPanel::ControlPanel(QWidget* parent)
             emit iterationCountChanged(val.value<int>());
         }
     });
-    connect(dotSize, &QLineEdit::textChanged, [this](QString text) {
-        bool ok{false};
-        auto value = text.toDouble(&ok);
-        if (ok) {
-            emit particleSizeChanged(value);
-        }
-    });
+    connect(_radiusEdit, &QLineEdit::textEdited, this, &ControlPanel::validateRadiusEdit);
 
     /// placement
     int row = 0;
@@ -85,6 +80,17 @@ ControlPanel::ControlPanel(QWidget* parent)
     col = 0;
     row++;
     layout->addWidget(iterations,  row, col++, 1, 1);
-    layout->addWidget(sizeLabel,   row, col++, 1, 1);
-    layout->addWidget(dotSize,     row, col++, 1, 2);
+    layout->addWidget(radiusLabel,   row, col++, 1, 1);
+    layout->addWidget(_radiusEdit,     row, col++, 1, 2);
+}
+
+void ControlPanel::validateRadiusEdit(QString text)
+{
+    if (_radiusEdit && _radiusEdit->hasAcceptableInput()) {
+        bool ok{false};
+        auto value = text.toDouble(&ok);
+        if (ok) {
+            emit particleSizeChanged(value);
+        }
+    }
 }

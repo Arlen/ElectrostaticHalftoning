@@ -7,6 +7,8 @@
 #include <QWidget>
 
 
+class QLineEdit;
+
 namespace gui
 {
     class ControlPanel final : public QWidget
@@ -20,5 +22,11 @@ namespace gui
 
     public:
         ControlPanel(QWidget* parent = nullptr);
+
+    private slots:
+        void validateRadiusEdit(QString text);
+
+    private:
+        QLineEdit* _radiusEdit{nullptr};
     };
 }
