@@ -6,8 +6,6 @@
 
 #include <QWidget>
 
-#include "ImageView.hpp"
-
 
 namespace gui
 {
