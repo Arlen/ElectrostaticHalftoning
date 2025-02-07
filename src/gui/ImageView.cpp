@@ -12,7 +12,8 @@
 
 using namespace gui;
 
-ImageView::ImageView()
+ImageView::ImageView(QWidget* parent)
+    : QWidget(parent)
 {
     setAcceptDrops(true);
 }

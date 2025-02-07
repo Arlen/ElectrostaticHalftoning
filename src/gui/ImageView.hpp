@@ -17,7 +17,7 @@ namespace gui
         void opened(QImage image);
 
     public:
-        ImageView();
+        ImageView(QWidget* parent = nullptr);
 
     protected:
         void dragEnterEvent(QDragEnterEvent* event) override;

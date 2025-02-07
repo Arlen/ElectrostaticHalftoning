@@ -36,10 +36,10 @@ namespace gui
 
     signals:
         void radiusChanged(qreal radius);
-        void pointsChanged(const QVector<QPointF>& points);
+        void particlesChanged(const QVector<QPointF>& points);
 
     public:
-        ParticlesView();
+        ParticlesView(QWidget* parent = nullptr);
 
     private:
         QWidget* _view;

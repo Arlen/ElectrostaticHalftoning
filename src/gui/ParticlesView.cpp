@@ -44,7 +44,8 @@ void View::paintEvent(QPaintEvent* event)
 }
 
 
-ParticlesView::ParticlesView()
+ParticlesView::ParticlesView(QWidget* parent)
+    : QWidget(parent)
 {
     auto* layout = new QVBoxLayout(this);
     layout->setSpacing(0);
@@ -53,7 +54,7 @@ ParticlesView::ParticlesView()
     _view = new View(this);
     layout->addWidget(_view);
 
-    QObject::connect(this, SIGNAL(radiusChanged(qreal)), _view, SLOT(setRadius(qreal)));
-    QObject::connect(this, SIGNAL(pointsChanged(const QVector<QPointF>&)),
+    connect(this, SIGNAL(radiusChanged(qreal)), _view, SLOT(setRadius(qreal)));
+    connect(this, SIGNAL(particlesChanged(const QVector<QPointF>&)),
         _view, SLOT(draw(const QVector<QPointF>&)));
 }
