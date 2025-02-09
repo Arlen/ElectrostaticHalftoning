@@ -7,6 +7,8 @@
 #include <QWidget>
 
 
+class QPushButton;
+
 namespace gui
 {
     class View final : public QWidget
@@ -19,11 +21,19 @@ namespace gui
     public slots:
         void setRadius(qreal radius);
         void draw(const QVector<QPointF>& points);
+        void zoomIn();
+        void zoomOut();
+
+    private slots:
+        void clearInfo();
 
     protected:
         void paintEvent(QPaintEvent* event) override;
 
-        qreal _radius;
+        qreal _radius{1};
+        qreal _scale{1};
+        QString _info;
+        QTimer* _timer;
         QVector<QPointF> _points;
     };
 
@@ -33,13 +43,20 @@ namespace gui
         Q_OBJECT
 
     signals:
+        void zoomedIn();
+        void zoomedOut();
         void radiusChanged(qreal radius);
         void particlesChanged(const QVector<QPointF>& points);
 
     public:
         ParticlesView(QWidget* parent = nullptr);
 
+    protected:
+        void resizeEvent(QResizeEvent* event) override;
+
     private:
-        QWidget* _view;
+        QWidget* _view{nullptr};
+        QPushButton* _zoomIn{nullptr};
+        QPushButton* _zoomOut{nullptr};
     };
 }
