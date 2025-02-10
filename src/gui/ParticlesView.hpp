@@ -20,7 +20,7 @@ namespace gui
 
     public slots:
         void setRadius(qreal radius);
-        void draw(const QVector<QPointF>& points);
+        void draw(const QVector<QPointF>& points, int iter, int iterMax);
         void zoomIn();
         void zoomOut();
 
@@ -32,6 +32,8 @@ namespace gui
 
         qreal _radius{1};
         qreal _scale{1};
+        int _iter{0};
+        int _iterMax{0};
         QString _info;
         QTimer* _timer;
         QVector<QPointF> _points;
@@ -46,7 +48,7 @@ namespace gui
         void zoomedIn();
         void zoomedOut();
         void radiusChanged(qreal radius);
-        void particlesChanged(const QVector<QPointF>& points);
+        void particlesChanged(const QVector<QPointF>& points, int iter, int iterMax);
 
     public:
         ParticlesView(QWidget* parent = nullptr);

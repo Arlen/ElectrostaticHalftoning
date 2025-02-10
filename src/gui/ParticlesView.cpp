@@ -26,15 +26,19 @@ void View::setRadius(qreal radius)
     update();
 }
 
-void View::draw(const QVector<QPointF>& points)
+void View::draw(const QVector<QPointF>& points, int iter, int iterMax)
 {
-    _points = points;
+    _points  = points;
+    _iter    = iter;
+    _iterMax = iterMax;
+    update();
 }
 
 void View::zoomIn()
 {
     _scale = qBound(0.25, _scale + 0.25, 4.0);
-    _info = QString("Zoom %1x").arg(_scale);
+    _info  = QString("Zoom %1x").arg(_scale);
+
     _timer->start(2000);
     update();
 }
@@ -42,7 +46,8 @@ void View::zoomIn()
 void View::zoomOut()
 {
     _scale = qBound(0.25, _scale - 0.25, 4.0);
-    _info = QString("Zoom %1x").arg(_scale);
+    _info  = QString("Zoom %1x").arg(_scale);
+
     _timer->start(2000);
     update();
 }
@@ -50,8 +55,8 @@ void View::zoomOut()
 void View::clearInfo()
 {
     _info.clear();
-    update();
     _timer->stop();
+    update();
 }
 
 
@@ -79,6 +84,13 @@ void View::paintEvent(QPaintEvent* event)
         painter.setPen(QColor(32, 32, 32, 255));
         painter.drawText(bbox, Qt::AlignCenter, _info);
     }
+
+    if (_iter < _iterMax && _iterMax > 0) {
+        const auto bot = rect().bottom()-3; /// 4px thick
+        const auto perc = width() * (qreal(_iter)/qreal(_iterMax));
+        painter.fillRect(QRect(0, bot, width(), 4), QColor(196, 196, 196, 255));
+        painter.fillRect(QRect(0, bot, perc, 4), QColor(32, 196, 64, 255));
+    }
 }
 
 
@@ -96,8 +108,8 @@ ParticlesView::ParticlesView(QWidget* parent)
     _zoomOut = new QPushButton("-", this);  _zoomOut->setFixedSize(24, 24);
 
     connect(this, SIGNAL(radiusChanged(qreal)), _view, SLOT(setRadius(qreal)));
-    connect(this, SIGNAL(particlesChanged(const QVector<QPointF>&)),
-        _view, SLOT(draw(const QVector<QPointF>&)));
+    connect(this, SIGNAL(particlesChanged(const QVector<QPointF>&, int, int)),
+        _view, SLOT(draw(const QVector<QPointF>&, int, int)));
 
     connect(_zoomIn, &QPushButton::clicked, this, &ParticlesView::zoomedIn);
     connect(_zoomOut, &QPushButton::clicked, this, &ParticlesView::zoomedOut);
@@ -108,12 +120,13 @@ ParticlesView::ParticlesView(QWidget* parent)
 
 void ParticlesView::resizeEvent(QResizeEvent* event)
 {
-    const auto space = 2;
-    const auto rec   = rect().adjusted(0, 0, -_zoomOut->width(), -_zoomOut->height());
-    const auto br    = rec.bottomRight();
+    const auto margin = QPoint(0, 8);
+    const auto space  = QPoint(0, 4);
+    const auto rec    = rect();
+    const auto br     = rec.bottomRight() - _zoomOut->rect().bottomRight() - margin;
 
     _zoomOut->move(br);
-    _zoomIn->move(br - QPoint(0, _zoomIn->height() + space));
+    _zoomIn->move(_zoomOut->geometry().topLeft() - _zoomIn->rect().bottomLeft() - space);
 
     QWidget::resizeEvent(event);
 }
