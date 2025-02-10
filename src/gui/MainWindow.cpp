@@ -31,6 +31,7 @@ MainWindow::MainWindow()
     splitter->addWidget(imageView);
     splitter->addWidget(particlesView);
     splitter->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    splitter->setSizes({32, 32});
 
     auto* ctrlPanel = new ControlPanel(this);
     ctrlPanel->setMinimumHeight(64);
