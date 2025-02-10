@@ -53,8 +53,8 @@ ControlPanel::ControlPanel(QWidget* parent)
     layout->setContentsMargins(0, 0, 0, 0);
 
     /// widgets
-    auto* particles  = new Slider("Particles", powerOfTwos(16, 8), this);
-    auto* iterations = new Slider("Iterations", powerOfTwos(13), this);
+    auto* particles  = new Slider("Particles", powerOfTwos(16, 8), 4, this);
+    auto* iterations = new Slider("Iterations", powerOfTwos(13), 4, this);
 
     auto* radiusLabel = new QLabel("Radius", this);
     _radiusEdit = radiusEdit(this);

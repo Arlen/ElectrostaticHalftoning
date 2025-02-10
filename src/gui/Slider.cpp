@@ -12,15 +12,13 @@
 
 using namespace gui;
 
-Slider::Slider(QString name, QVector<QVariant> values, QWidget* parent)
+Slider::Slider(QString name, QVector<QVariant> values, int initIndex, QWidget* parent)
     : QWidget(parent)
     , _values(values)
 {
     setFocusPolicy(Qt::StrongFocus);
 
-    if (values.isEmpty()) {
-        return;
-    }
+    assert(initIndex < values.size());
 
     auto* layout = new QHBoxLayout(this);
     layout->setSpacing(4);
@@ -31,13 +29,16 @@ Slider::Slider(QString name, QVector<QVariant> values, QWidget* parent)
     nameLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     layout->addWidget(nameLabel);
 
-    _valueLabel = new QLabel(values.first().toString(), this);
+    _valueLabel = new QLabel(values[initIndex].toString(), this);
     _valueLabel->setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
     layout->addWidget(_valueLabel);
 
     auto* slider = new QSlider(Qt::Horizontal, this);
     slider->setMinimum(0);
     slider->setMaximum(values.size() - 1);
+    slider->setPageStep(1);
+    slider->setSingleStep(1);
+    slider->setValue(initIndex);
     layout->addWidget(slider);
 
     connect(slider, &QSlider::valueChanged, this, &Slider::setValue);
