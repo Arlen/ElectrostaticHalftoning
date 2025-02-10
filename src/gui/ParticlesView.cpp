@@ -120,7 +120,7 @@ ParticlesView::ParticlesView(QWidget* parent)
 
 void ParticlesView::resizeEvent(QResizeEvent* event)
 {
-    const auto margin = QPoint(0, 8);
+    const auto margin = QPoint(8, 8);
     const auto space  = QPoint(0, 4);
     const auto rec    = rect();
     const auto br     = rec.bottomRight() - _zoomOut->rect().bottomRight() - margin;
