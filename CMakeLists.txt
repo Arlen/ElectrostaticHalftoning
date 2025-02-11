@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD 26)
 set(CMAKE_AUTOMOC ON)
 
 find_package(Qt6 COMPONENTS Core Gui Widgets REQUIRED)
+find_package(OpenCL REQUIRED)
 
 file(GLOB SOURCES_FILES
         ${PROJECT_SOURCE_DIR}/src
@@ -23,7 +24,7 @@ file(GLOB HEADER_FILES
 add_executable(ElectrostaticHalftoning ${SOURCES_FILES} ${HEADER_FILES})
 target_include_directories(ElectrostaticHalftoning PUBLIC ${HEADER_FILES})
 
-target_link_libraries(ElectrostaticHalftoning Qt::Core Qt::Gui Qt::Widgets)
+target_link_libraries(ElectrostaticHalftoning Qt::Core Qt::Gui Qt::Widgets OpenCL::OpenCL)
 
 
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=bounds")
