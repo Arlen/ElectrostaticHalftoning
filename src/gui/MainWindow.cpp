@@ -37,8 +37,6 @@ MainWindow::MainWindow()
     ctrlPanel->setMinimumHeight(64);
     layout->addWidget(ctrlPanel);
 
-    /// notify ParticlesView to redraw whenever the user changes dot radius size.
-    connect(ctrlPanel, &ControlPanel::particleSizeChanged, particlesView, &ParticlesView::radiusChanged);
     /// notify ParticlesView to redraw whenever particles have changed.
     connect(core::controller(), &core::Controller::generated, particlesView, &ParticlesView::particlesChanged);
 
@@ -46,6 +44,8 @@ MainWindow::MainWindow()
     connect(imageView, &ImageView::opened, core::controller(), &core::Controller::consume);
     /// notify controller whenever the user changes particle count.
     connect(ctrlPanel, &ControlPanel::particleCountChanged, core::controller(), &core::Controller::setParticleCount);
+    /// notify controller whenever the user changes particle radius.
+    connect(ctrlPanel, &ControlPanel::particleRadiusChanged, core::controller(),  &core::Controller::setParticleRadius);
     /// notify controller whenever the user changes the iteration count.
     connect(ctrlPanel, &ControlPanel::iterationCountChanged, core::controller(), &core::Controller::setIterationCount);
 }

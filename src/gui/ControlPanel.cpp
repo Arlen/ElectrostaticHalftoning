@@ -33,7 +33,7 @@ namespace
     auto radiusEdit(QWidget* parent = nullptr)
     {
         auto* le = new QLineEdit(parent);
-        auto* validator = new QDoubleValidator(0.25, 8.0, 2, le);
+        auto* validator = new QDoubleValidator(0.000001, 8.0, 7, le);
         validator->setNotation(QDoubleValidator::StandardNotation);
         validator->setLocale(QLocale::C);
         le->setValidator(validator);
@@ -90,7 +90,7 @@ void ControlPanel::validateRadiusEdit(QString text)
         bool ok{false};
         auto value = text.toDouble(&ok);
         if (ok) {
-            emit particleSizeChanged(value);
+            emit particleRadiusChanged(value);
         }
     }
 }

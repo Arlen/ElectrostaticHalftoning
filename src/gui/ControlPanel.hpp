@@ -16,7 +16,7 @@ namespace gui
         Q_OBJECT
 
     signals:
-        void particleSizeChanged(qreal size);
+        void particleRadiusChanged(qreal radius);
         void particleCountChanged(int count);
         void iterationCountChanged(int count);
 
