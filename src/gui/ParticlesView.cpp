@@ -121,7 +121,6 @@ ParticlesView::ParticlesView(QWidget* parent)
     _increaseDotSize = new QPushButton("O", this);  _increaseDotSize->setFixedSize(24, 24);
     _decreaseDotSize = new QPushButton("o", this);  _decreaseDotSize->setFixedSize(24, 24);
 
-    connect(this, SIGNAL(radiusChanged(qreal)), _view, SLOT(setRadius(qreal)));
     connect(this, SIGNAL(particlesChanged(const QVector<QPointF>&, int, int)),
         _view, SLOT(draw(const QVector<QPointF>&, int, int)));
 
