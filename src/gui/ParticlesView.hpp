@@ -19,10 +19,11 @@ namespace gui
         View(QWidget* parent = nullptr);
 
     public slots:
-        void setRadius(qreal radius);
         void draw(const QVector<QPointF>& points, int iter, int iterMax);
         void zoomIn();
         void zoomOut();
+        void increaseDotSize();
+        void decreaseDotSize();
 
     private slots:
         void clearInfo();
@@ -30,7 +31,7 @@ namespace gui
     protected:
         void paintEvent(QPaintEvent* event) override;
 
-        qreal _radius{1};
+        qreal _dotSize{1};
         qreal _scale{1};
         int _iter{0};
         int _iterMax{0};
@@ -47,7 +48,8 @@ namespace gui
     signals:
         void zoomedIn();
         void zoomedOut();
-        void radiusChanged(qreal radius);
+        void increasedDotSize();
+        void decreasedDotSize();
         void particlesChanged(const QVector<QPointF>& points, int iter, int iterMax);
 
     public:
@@ -60,5 +62,7 @@ namespace gui
         QWidget* _view{nullptr};
         QPushButton* _zoomIn{nullptr};
         QPushButton* _zoomOut{nullptr};
+        QPushButton* _increaseDotSize{nullptr};
+        QPushButton* _decreaseDotSize{nullptr};
     };
 }

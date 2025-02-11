@@ -20,12 +20,6 @@ View::View(QWidget* parent)
     connect(_timer, &QTimer::timeout, this, &View::clearInfo);
 }
 
-void View::setRadius(qreal radius)
-{
-    _radius = radius;
-    update();
-}
-
 void View::draw(const QVector<QPointF>& points, int iter, int iterMax)
 {
     _points  = points;
@@ -52,13 +46,30 @@ void View::zoomOut()
     update();
 }
 
+void View::increaseDotSize()
+{
+    _dotSize = qBound(0.25, _dotSize + 0.25, 8.0);
+    _info  = QString("Dot Size= %1px").arg(_dotSize);
+
+    _timer->start(2000);
+    update();
+}
+
+void View::decreaseDotSize()
+{
+    _dotSize = qBound(0.25, _dotSize - 0.25, 8.0);
+    _info  = QString("Dot Size= %1px").arg(_dotSize);
+
+    _timer->start(2000);
+    update();
+}
+
 void View::clearInfo()
 {
     _info.clear();
     _timer->stop();
     update();
 }
-
 
 void View::paintEvent(QPaintEvent* event)
 {
@@ -70,13 +81,14 @@ void View::paintEvent(QPaintEvent* event)
     painter.setBrush(Qt::black);
 
     for (const auto& p : _points) {
-        painter.drawEllipse(p * _scale, _radius, _radius);
+        painter.drawEllipse(p * _scale, _dotSize, _dotSize);
     }
 
     if (!_info.isEmpty()) {
         QFontMetrics fmt(font());
         auto bbox = fmt.boundingRect(_info);
-        bbox.moveTopLeft(QPoint(0, 0) + QPoint(16, 8));
+        bbox.moveCenter(rect().center());
+        bbox.moveBottom(rect().bottom() - 16);
         painter.setRenderHint(QPainter::Antialiasing);
         painter.setPen(Qt::black);
         painter.setBrush(Qt::darkGray);
@@ -106,6 +118,8 @@ ParticlesView::ParticlesView(QWidget* parent)
 
     _zoomIn  = new QPushButton("+", this);  _zoomIn->setFixedSize(24, 24);
     _zoomOut = new QPushButton("-", this);  _zoomOut->setFixedSize(24, 24);
+    _increaseDotSize = new QPushButton("O", this);  _increaseDotSize->setFixedSize(24, 24);
+    _decreaseDotSize = new QPushButton("o", this);  _decreaseDotSize->setFixedSize(24, 24);
 
     connect(this, SIGNAL(radiusChanged(qreal)), _view, SLOT(setRadius(qreal)));
     connect(this, SIGNAL(particlesChanged(const QVector<QPointF>&, int, int)),
@@ -113,9 +127,14 @@ ParticlesView::ParticlesView(QWidget* parent)
 
     connect(_zoomIn, &QPushButton::clicked, this, &ParticlesView::zoomedIn);
     connect(_zoomOut, &QPushButton::clicked, this, &ParticlesView::zoomedOut);
+    connect(_increaseDotSize, &QPushButton::clicked, this, &ParticlesView::increasedDotSize);
+    connect(_decreaseDotSize, &QPushButton::clicked, this, &ParticlesView::decreasedDotSize);
 
     connect(this, SIGNAL(zoomedIn()), _view, SLOT(zoomIn()));
     connect(this, SIGNAL(zoomedOut()), _view, SLOT(zoomOut()));
+
+    connect(this, SIGNAL(increasedDotSize()), _view, SLOT(increaseDotSize()));
+    connect(this, SIGNAL(decreasedDotSize()), _view, SLOT(decreaseDotSize()));
 }
 
 void ParticlesView::resizeEvent(QResizeEvent* event)
@@ -124,9 +143,14 @@ void ParticlesView::resizeEvent(QResizeEvent* event)
     const auto space  = QPoint(0, 4);
     const auto rec    = rect();
     const auto br     = rec.bottomRight() - _zoomOut->rect().bottomRight() - margin;
+    const auto tr     = rec.topLeft();
 
     _zoomOut->move(br);
     _zoomIn->move(_zoomOut->geometry().topLeft() - _zoomIn->rect().bottomLeft() - space);
+
+    const auto y = height() - (_increaseDotSize->height()*2 + space.y() + margin.y());
+    _increaseDotSize->move(tr + QPoint(margin.x(), y));
+    _decreaseDotSize->move(_increaseDotSize->geometry().bottomLeft() + space);
 
     QWidget::resizeEvent(event);
 }
