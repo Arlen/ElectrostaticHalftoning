@@ -1,56 +1,51 @@
 /// Copyright (C) 2025 Arlen Avakian
 /// SPDX-License-Identifier: GPL-3.0-or-later
 
+
 #include "Controller.hpp"
 
 #include <QImage>
-
-#include <random>
+#include <QTimer>
 
 
 using namespace core;
 
-
 Controller::Controller(QObject* parent)
     : QObject(parent)
 {
+    _eh = new ElectrostaticHalftoning(this);
 
-
+    connect(_eh, &ElectrostaticHalftoning::iterationFinished, this, &Controller::generated);
 }
 
-void Controller::consume(QImage image)
+void Controller::consume(const QImage& image)
 {
-    _image = image;
-    generate();
+    _eh->setValues(core::normalizedValues(image), image.width(), image.height());
+    QTimer::singleShot(0, [this]{ iterate(); });
 }
 
 void Controller::setParticleCount(int count)
 {
-    _particleCount = count;
-    generate();
+    _eh->setParticleCount(count);
+    iterate();
 }
 
-void Controller::setIterationCount(int count)
+void Controller::setParticleRadius(f32 radius)
 {
-
+    _eh->setParticleRadius(radius);
+    iterate();
 }
 
-void Controller::generate()
+void Controller::setIterationCount(int i)
 {
-    if (_image.isNull()) {
-        return;
+    _eh->setMaxIteration(i);
+    iterate();
+}
+
+void Controller::iterate()
+{
+    _eh->nextIteration();
+    if (_eh->currentIteration() < _eh->maxIterations()) {
+        QTimer::singleShot(0, [this]{ iterate(); });
     }
-
-    std::minstd_rand rng(time(0));
-    std::uniform_real_distribution<double> urdX(0, _image.width() - 1);
-    std::uniform_real_distribution<double> urdY(0, _image.height() - 1);
-
-    QVector<QPointF> particles;
-    for (int i = 0; i < _particleCount; i++) {
-        auto x = urdX(rng);
-        auto y = urdY(rng);
-        particles.append(QPointF(x, y));
-    }
-
-    emit generated(particles);
 }

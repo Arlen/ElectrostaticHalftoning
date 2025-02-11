@@ -4,8 +4,11 @@
 
 #pragma once
 
+#include "eh.hpp"
+
 #include <QObject>
 #include <QImage>
+
 
 namespace core
 {
@@ -14,22 +17,23 @@ namespace core
         Q_OBJECT
 
     signals:
-        void generated(const QVector<QPointF>& points);
+        void generated(const QVector<QPointF>& points, int iter, int iterMax);
 
     public:
         Controller(QObject* parent = nullptr);
 
     public slots:
-        void consume(QImage image);
+        void consume(const QImage& image);
         void setParticleCount(int count);
+        void setParticleRadius(f32 radius);
         void setIterationCount(int count);
+        void iterate();
 
     private:
-        void generate();
-
-        int _particleCount{256};
-        QImage _image;
+        core::ElectrostaticHalftoning* _eh{nullptr};
+        QTimer* _timer{nullptr};
     };
+
 
     inline auto controller()
     {
