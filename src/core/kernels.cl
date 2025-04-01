@@ -43,7 +43,7 @@ __kernel void computeForceField(__global const float* values, __global float2* f
     PosP.x = gid % w;
     PosP.y = gid / w;
 
-    float2 totalForce = {0, 0};
+    double2 totalForce = {0, 0};
     float2 PosG = {0, 0};
 
     for (uint rowG = 0; rowG < h; ++rowG) {
@@ -53,7 +53,7 @@ __kernel void computeForceField(__global const float* values, __global float2* f
                 float charge = 1.0f - values[indexG];
                 float2 e_pg  = PosG - PosP;
                 float force  = charge / dot(e_pg, e_pg);
-                totalForce += force * normalize(e_pg);
+                totalForce += convert_double2(force * normalize(e_pg));
             }
             PosG.x += 1;
         }
@@ -61,7 +61,7 @@ __kernel void computeForceField(__global const float* values, __global float2* f
         PosG.y += 1;
     }
 
-    forceField[gid] = totalForce;
+    forceField[gid] = convert_float2(totalForce);
 }
 
 __kernel void iterate(__global float2* points, __global float2* result, __global const float2* forceField, uint w, float2 boundry, float radius)
