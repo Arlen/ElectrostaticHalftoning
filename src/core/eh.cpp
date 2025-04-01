@@ -57,8 +57,8 @@ std::vector<f32> core::normalizedValues(const QImage& image)
         for (auto& x : values) { x = normalize(x); }
     }
 
-    assert(*std::ranges::min_element(values) >= 0.0);
-    assert(*std::ranges::max_element(values) <= 1.0);
+    Q_ASSERT(*std::ranges::min_element(values) >= 0.0);
+    Q_ASSERT(*std::ranges::max_element(values) <= 1.0);
 
     return values;
 }
@@ -90,8 +90,8 @@ ElectrostaticHalftoning::ElectrostaticHalftoning(QObject* parent)
 
 void ElectrostaticHalftoning::setValues(const std::vector<f32>& values, u32 width, u32 height)
 {
-    assert(values.size() == width * height);
-    assert(std::ranges::all_of(values, [](auto x) { return x >= f32(0) && x <= f32(1); }));
+    Q_ASSERT(values.size() == width * height);
+    Q_ASSERT(std::ranges::all_of(values, [](auto x) { return x >= f32(0) && x <= f32(1); }));
 
     _width  = width;
     _height = height;
@@ -193,7 +193,9 @@ void ElectrostaticHalftoning::computeForceField()
 
 void ElectrostaticHalftoning::initializeParticles(i32 count)
 {
-    assert(count > 0);
+    Q_ASSERT(count > 0);
+    Q_ASSERT(!_values.empty());
+    Q_ASSERT(_values.size() == _width*_height);
 
     std::uniform_real_distribution<f32> uniform01(0, 1);
     std::uniform_int_distribution<u32> uidW(0, _width-1);
@@ -214,8 +216,8 @@ void ElectrostaticHalftoning::initializeParticles(i32 count)
             f32 x = col + uniform01(rng2);
             f32 y = row + uniform01(rng2);
 
-            assert(x >= 0 && x < _width);
-            assert(y >= 0 && y < _height);
+            Q_ASSERT(x >= 0 && x < _width);
+            Q_ASSERT(y >= 0 && y < _height);
 
             tmp.push_back({x, y});
         }

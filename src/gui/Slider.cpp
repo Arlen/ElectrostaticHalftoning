@@ -18,7 +18,7 @@ Slider::Slider(QString name, QVector<QVariant> values, int initIndex, QWidget* p
 {
     setFocusPolicy(Qt::StrongFocus);
 
-    assert(initIndex < values.size());
+    Q_ASSERT(initIndex < values.size());
 
     auto* layout = new QHBoxLayout(this);
     layout->setSpacing(4);
