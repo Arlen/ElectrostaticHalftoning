@@ -13,6 +13,9 @@ namespace gui
     {
         Q_OBJECT
 
+    signals:
+        void exportSvgTriggered(const QString& path, const QSize& size);
+
     public:
         MainWindow();
     };

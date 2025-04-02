@@ -8,6 +8,7 @@
 #include <QPushButton>
 #include <QTimer>
 #include <QVBoxLayout>
+#include <QSvgGenerator>
 
 
 using namespace gui;
@@ -48,8 +49,8 @@ void View::zoomOut()
 
 void View::increaseDotSize()
 {
-    _dotSize = qBound(0.25, _dotSize + 0.25, 8.0);
-    _info  = QString("Dot Size= %1px").arg(_dotSize);
+    _dotRadius = qBound(0.25, _dotRadius + 0.25, 8.0);
+    _info  = QString("Dot Radius= %1px").arg(_dotRadius);
 
     _timer->start(2000);
     update();
@@ -57,11 +58,29 @@ void View::increaseDotSize()
 
 void View::decreaseDotSize()
 {
-    _dotSize = qBound(0.25, _dotSize - 0.25, 8.0);
-    _info  = QString("Dot Size= %1px").arg(_dotSize);
+    _dotRadius = qBound(0.25, _dotRadius - 0.25, 8.0);
+    _info  = QString("Dot Radius= %1px").arg(_dotRadius);
 
     _timer->start(2000);
     update();
+}
+
+void View::exportSvg(const QString& path, const QSize& size)
+{
+    QSvgGenerator generator;
+    generator.setFileName(path);
+    const auto width  = size.width() * _scale + _dotRadius*2.0;
+    const auto height = size.height() * _scale + _dotRadius*2.0;
+    generator.setSize(QSize(width, height));
+    generator.setViewBox(QRectF(-_dotRadius, -_dotRadius, width, height));
+
+    QPainter painter(&generator);
+    painter.setRenderHint(QPainter::Antialiasing);
+    painter.setPen(Qt::NoPen);
+    painter.setBrush(Qt::black);
+    for (const auto& p : _points) {
+        painter.drawEllipse(p * _scale, _dotRadius, _dotRadius);
+    }
 }
 
 void View::clearInfo()
@@ -81,7 +100,7 @@ void View::paintEvent(QPaintEvent* event)
     painter.setBrush(Qt::black);
 
     for (const auto& p : _points) {
-        painter.drawEllipse(p * _scale, _dotSize, _dotSize);
+        painter.drawEllipse(p * _scale, _dotRadius, _dotRadius);
     }
 
     if (!_info.isEmpty()) {
@@ -120,9 +139,8 @@ ParticlesView::ParticlesView(QWidget* parent)
     _zoomOut = new QPushButton("-", this);  _zoomOut->setFixedSize(24, 24);
     _increaseDotSize = new QPushButton("O", this);  _increaseDotSize->setFixedSize(24, 24);
     _decreaseDotSize = new QPushButton("o", this);  _decreaseDotSize->setFixedSize(24, 24);
-
-    connect(this, SIGNAL(particlesChanged(const QVector<QPointF>&, int, int)),
-        _view, SLOT(draw(const QVector<QPointF>&, int, int)));
+    connect(this, &ParticlesView::particlesChanged, _view, &View::draw);
+    connect(this, &ParticlesView::exportSvg, _view, &View::exportSvg);
 
     connect(_zoomIn, &QPushButton::clicked, this, &ParticlesView::zoomedIn);
     connect(_zoomOut, &QPushButton::clicked, this, &ParticlesView::zoomedOut);

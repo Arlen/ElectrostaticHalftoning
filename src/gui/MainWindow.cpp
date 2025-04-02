@@ -9,7 +9,9 @@
 
 #include "core/Controller.hpp"
 
+#include <QFileDialog>
 #include <QLabel>
+#include <QMenuBar>
 #include <QSplitter>
 #include <QStackedLayout>
 #include <QTimer>
@@ -23,6 +25,16 @@ MainWindow::MainWindow()
     auto* layout = new QVBoxLayout(this);
     layout->setSpacing(0);
     layout->setContentsMargins(4, 4, 4, 4);
+
+    auto* mb = new QMenuBar(this);
+    auto* fileMenu = mb->addMenu("File");
+    auto* exportAction = fileMenu->addAction("Export SVG");
+    exportAction->setDisabled(true);
+    fileMenu->addSeparator();
+    auto* quitAction = fileMenu->addAction("Quit");
+    layout->addWidget(mb);
+
+    connect(quitAction, &QAction::triggered, qApp, &QApplication::quit);
 
     auto* splitter = new QSplitter(this);
     splitter->setHandleWidth(8);
@@ -76,4 +88,20 @@ MainWindow::MainWindow()
     connect(ctrlPanel, &ControlPanel::particleRadiusChanged, core::controller(),  &core::Controller::setParticleRadius);
     /// notify controller whenever the user changes the iteration count.
     connect(ctrlPanel, &ControlPanel::iterationCountChanged, core::controller(), &core::Controller::setIterationCount);
+
+    /// SVG export
+    connect(core::controller(), &core::Controller::forceFieldStarted, [exportAction] {
+        exportAction->setEnabled(false);
+    });
+    connect(core::controller(), &core::Controller::forceFieldGenerated, exportAction, [exportAction] {
+        exportAction->setEnabled(true);
+    });
+    connect(exportAction, &QAction::triggered, [this, imageView] {
+        auto path = QFileDialog::getSaveFileName(this, "Export SVG", QDir::homePath(), "Files (*.svg)");
+        if (!path.isEmpty()) {
+            emit exportSvgTriggered(path, imageView->image().size());
+        }
+    });
+
+    connect(this, &MainWindow::exportSvgTriggered, particlesView, &ParticlesView::exportSvg);
 }

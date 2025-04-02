@@ -16,7 +16,7 @@ namespace gui
         Q_OBJECT
 
     public:
-        View(QWidget* parent = nullptr);
+        explicit View(QWidget* parent = nullptr);
 
     public slots:
         void draw(const QVector<QPointF>& points, int iter, int iterMax);
@@ -24,6 +24,7 @@ namespace gui
         void zoomOut();
         void increaseDotSize();
         void decreaseDotSize();
+        void exportSvg(const QString& path, const QSize& size);
 
     private slots:
         void clearInfo();
@@ -31,7 +32,7 @@ namespace gui
     protected:
         void paintEvent(QPaintEvent* event) override;
 
-        qreal _dotSize{1};
+        qreal _dotRadius{1};
         qreal _scale{1};
         int _iter{0};
         int _iterMax{0};
@@ -51,15 +52,16 @@ namespace gui
         void increasedDotSize();
         void decreasedDotSize();
         void particlesChanged(const QVector<QPointF>& points, int iter, int iterMax);
+        void exportSvg(const QString& path, const QSize& size);
 
     public:
-        ParticlesView(QWidget* parent = nullptr);
+        explicit ParticlesView(QWidget* parent = nullptr);
 
     protected:
         void resizeEvent(QResizeEvent* event) override;
 
     private:
-        QWidget* _view{nullptr};
+        View* _view{nullptr};
         QPushButton* _zoomIn{nullptr};
         QPushButton* _zoomOut{nullptr};
         QPushButton* _increaseDotSize{nullptr};
