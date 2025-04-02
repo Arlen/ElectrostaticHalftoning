@@ -189,6 +189,8 @@ void ElectrostaticHalftoning::computeForceField()
     _forceFieldKernel.set_arg(3, _height);
     _queue.enqueue_1d_range_kernel(_forceFieldKernel, 0, _width*_height, 0).wait();
     _queue.finish();
+
+    emit forceFieldGenerated();
 }
 
 void ElectrostaticHalftoning::initializeParticles(i32 count)

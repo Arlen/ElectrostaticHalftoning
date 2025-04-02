@@ -49,7 +49,7 @@ ControlPanel::ControlPanel(QWidget* parent)
     /// layout
     auto* layout = new QGridLayout(this);
     layout->setHorizontalSpacing(4);
-    layout->setVerticalSpacing(2);
+    layout->setVerticalSpacing(4);
     layout->setContentsMargins(0, 0, 0, 0);
 
     /// widgets
@@ -80,8 +80,8 @@ ControlPanel::ControlPanel(QWidget* parent)
     col = 0;
     row++;
     layout->addWidget(iterations,  row, col++, 1, 1);
-    layout->addWidget(radiusLabel,   row, col++, 1, 1);
-    layout->addWidget(_radiusEdit,     row, col++, 1, 2);
+    layout->addWidget(radiusLabel, row, col++, 1, 1);
+    layout->addWidget(_radiusEdit, row, col++, 1, 2);
 }
 
 void ControlPanel::validateRadiusEdit(QString text)

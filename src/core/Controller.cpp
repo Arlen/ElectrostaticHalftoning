@@ -5,7 +5,6 @@
 #include "Controller.hpp"
 
 #include <QImage>
-#include <QTimer>
 
 
 using namespace core;
@@ -16,12 +15,14 @@ Controller::Controller(QObject* parent)
     _eh = new ElectrostaticHalftoning(this);
 
     connect(_eh, &ElectrostaticHalftoning::iterationFinished, this, &Controller::generated);
+    connect(_eh, &ElectrostaticHalftoning::forceFieldGenerated, this, &Controller::forceFieldGenerated);
 }
 
 void Controller::consume(const QImage& image)
 {
+    emit forceFieldStarted();
     _eh->setValues(core::normalizedValues(image), image.width(), image.height());
-    QTimer::singleShot(0, [this]{ iterate(); });
+    iterate();
 }
 
 void Controller::setParticleCount(int count)
@@ -46,6 +47,6 @@ void Controller::iterate()
 {
     _eh->nextIteration();
     if (_eh->currentIteration() < _eh->maxIterations()) {
-        QTimer::singleShot(0, [this]{ iterate(); });
+        iterate();
     }
 }

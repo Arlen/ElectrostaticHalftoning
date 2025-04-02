@@ -6,8 +6,10 @@
 
 #include "eh.hpp"
 
+#include <QApplication>
 #include <QObject>
 #include <QImage>
+#include <QThread>
 
 
 namespace core
@@ -18,6 +20,8 @@ namespace core
 
     signals:
         void generated(const QVector<QPointF>& points, int iter, int iterMax);
+        void forceFieldStarted();
+        void forceFieldGenerated();
 
     public:
         Controller(QObject* parent = nullptr);
@@ -37,7 +41,19 @@ namespace core
 
     inline auto controller()
     {
-        static Controller* controller = new Controller();
+        static Controller* controller = nullptr;
+
+        if (controller == nullptr) {
+            auto* thread = new QThread;
+            controller   = new Controller;
+            controller->moveToThread(thread);
+
+            QObject::connect(qApp, &QApplication::aboutToQuit, thread, &QThread::quit);
+            QObject::connect(thread, &QThread::finished, controller, &QObject::deleteLater);
+            QObject::connect(thread, &QThread::finished, thread, &QObject::deleteLater);
+
+            thread->start();
+        }
 
         return controller;
     }

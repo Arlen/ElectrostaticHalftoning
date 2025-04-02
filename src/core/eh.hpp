@@ -35,6 +35,7 @@ namespace core
 
     signals:
         void iterationFinished(const QVector<QPointF>& points, int iter, int iterMax);
+        void forceFieldGenerated();
 
     public:
         ElectrostaticHalftoning(QObject* parent = nullptr);
