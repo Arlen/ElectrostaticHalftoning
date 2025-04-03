@@ -9,6 +9,7 @@
 #include <QLabel>
 #include <QLineEdit>
 
+#include <functional>
 #include <ranges>
 
 
@@ -16,30 +17,30 @@ using namespace gui;
 
 namespace
 {
-    QVector<QVariant> powerOfTwos(int stop, int offset = 0)
+    QVector<QVariant> powerOfTwos(std::uint32_t start, uint32_t stop)
     {
         using namespace std::views;
 
-        QVector<QVariant> counts;
+        Q_ASSERT(start <= stop+1);
 
-        for (auto val : iota(0, stop)
-            | transform([offset](auto x) { return std::pow(2, x+offset); })) {
-            counts.emplace_back(val);
-        }
+        QVector<QVariant> result;
 
-        return counts;
+        std::ranges::copy(iota(start, stop+1) | transform(std::bind_front(pow, 2)),
+            std::back_inserter(result));
+
+        return result;
     }
 
-    auto radiusEdit(QWidget* parent = nullptr)
+    auto createRadiusLineEdit(QWidget* parent = nullptr)
     {
-        auto* le = new QLineEdit(parent);
-        auto* validator = new QDoubleValidator(0.000001, 8.0, 7, le);
+        auto* lineEdit  = new QLineEdit(parent);
+        auto* validator = new QDoubleValidator(0.000001, 8.0, 7, lineEdit);
         validator->setNotation(QDoubleValidator::StandardNotation);
         validator->setLocale(QLocale::C);
-        le->setValidator(validator);
-        le->setText("1.0");
+        lineEdit->setValidator(validator);
+        lineEdit->setText("1.0");
 
-        return le;
+        return lineEdit;
     }
 }
 
@@ -53,44 +54,39 @@ ControlPanel::ControlPanel(QWidget* parent)
     layout->setContentsMargins(0, 0, 0, 0);
 
     /// widgets
-    auto* particles  = new Slider("Particles", powerOfTwos(16, 8), 4, this);
-    auto* iterations = new Slider("Iterations", powerOfTwos(13), 4, this);
-
+    auto* particles   = new Slider("Particles", powerOfTwos(8, 21), 4, this);
+    auto* iterations  = new Slider("Iterations", powerOfTwos(0, 12), 4, this);
     auto* radiusLabel = new QLabel("Radius", this);
-    _radiusEdit = radiusEdit(this);
+    auto* radiusEdit  = createRadiusLineEdit(this);
 
     /// connections
-    connect(particles, &Slider::valueChanged, [this](QVariant val) {
+    connect(particles, &Slider::valueChanged, [this](const QVariant &val) {
         if (val.canConvert<int>()) {
             emit particleCountChanged(val.value<int>());
         }
     });
-    connect(iterations, &Slider::valueChanged, [this](QVariant val) {
+    connect(iterations, &Slider::valueChanged, [this](const QVariant &val) {
         if (val.canConvert<int>()) {
             emit iterationCountChanged(val.value<int>());
         }
     });
-    connect(_radiusEdit, &QLineEdit::textEdited, this, &ControlPanel::validateRadiusEdit);
+    connect(radiusEdit, &QLineEdit::textEdited, [this, radiusEdit](const QString &text) {
+        if (radiusEdit->hasAcceptableInput()) {
+            auto ok = false;
+            if (const auto value = text.toDouble(&ok); ok) {
+                emit particleRadiusChanged(value);
+            }
+        }
+    });
 
     /// placement
-    int row = 0;
-    int col = 0;
+    auto row = 0;
+    auto col = 0;
     layout->addWidget(particles,  row, col++, 1, 1);
 
     col = 0;
     row++;
     layout->addWidget(iterations,  row, col++, 1, 1);
     layout->addWidget(radiusLabel, row, col++, 1, 1);
-    layout->addWidget(_radiusEdit, row, col++, 1, 2);
-}
-
-void ControlPanel::validateRadiusEdit(QString text)
-{
-    if (_radiusEdit && _radiusEdit->hasAcceptableInput()) {
-        bool ok{false};
-        auto value = text.toDouble(&ok);
-        if (ok) {
-            emit particleRadiusChanged(value);
-        }
-    }
+    layout->addWidget(radiusEdit,  row, col++, 1, 2);
 }

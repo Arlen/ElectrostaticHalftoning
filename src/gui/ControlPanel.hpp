@@ -21,12 +21,6 @@ namespace gui
         void iterationCountChanged(int count);
 
     public:
-        ControlPanel(QWidget* parent = nullptr);
-
-    private slots:
-        void validateRadiusEdit(QString text);
-
-    private:
-        QLineEdit* _radiusEdit{nullptr};
+        explicit ControlPanel(QWidget* parent = nullptr);
     };
 }
