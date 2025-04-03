@@ -24,7 +24,7 @@ namespace core
         void forceFieldGenerated();
 
     public:
-        Controller(QObject* parent = nullptr);
+        explicit Controller(QObject* parent = nullptr);
 
     public slots:
         void consume(const QImage& image);

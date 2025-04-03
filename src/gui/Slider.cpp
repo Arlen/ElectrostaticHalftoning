@@ -6,13 +6,13 @@
 
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QLocale>
 #include <QSlider>
-#include <qlocale.h>
 
 
 using namespace gui;
 
-Slider::Slider(QString name, QVector<QVariant> values, int initIndex, QWidget* parent)
+Slider::Slider(const QString& name, const QVector<QVariant>& values, int initIndex, QWidget* parent)
     : QWidget(parent)
     , _values(values)
 {

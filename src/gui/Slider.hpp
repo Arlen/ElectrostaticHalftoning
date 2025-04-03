@@ -19,7 +19,7 @@ namespace gui
         void valueChanged(QVariant value);
 
     public:
-        Slider(QString name, QVector<QVariant> values, int initIndex, QWidget* parent = nullptr);
+        Slider(const QString& name, const QVector<QVariant>& values, int initIndex, QWidget* parent = nullptr);
 
     private slots:
         void setValue(int i);
