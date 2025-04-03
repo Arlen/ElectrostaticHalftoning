@@ -42,7 +42,7 @@ namespace gui
     };
 
 
-    class ParticlesView : public QWidget
+    class ParticlesView final : public QWidget
     {
         Q_OBJECT
 

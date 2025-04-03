@@ -50,7 +50,7 @@ void View::zoomOut()
 void View::increaseDotSize()
 {
     _dotRadius = qBound(0.25, _dotRadius + 0.25, 8.0);
-    _info  = QString("Dot Radius= %1px").arg(_dotRadius);
+    _info      = QString("Dot Radius= %1px").arg(_dotRadius);
 
     _timer->start(2000);
     update();
@@ -59,7 +59,7 @@ void View::increaseDotSize()
 void View::decreaseDotSize()
 {
     _dotRadius = qBound(0.25, _dotRadius - 0.25, 8.0);
-    _info  = QString("Dot Radius= %1px").arg(_dotRadius);
+    _info      = QString("Dot Radius= %1px").arg(_dotRadius);
 
     _timer->start(2000);
     update();
@@ -147,11 +147,10 @@ ParticlesView::ParticlesView(QWidget* parent)
     connect(_increaseDotSize, &QPushButton::clicked, this, &ParticlesView::increasedDotSize);
     connect(_decreaseDotSize, &QPushButton::clicked, this, &ParticlesView::decreasedDotSize);
 
-    connect(this, SIGNAL(zoomedIn()), _view, SLOT(zoomIn()));
-    connect(this, SIGNAL(zoomedOut()), _view, SLOT(zoomOut()));
-
-    connect(this, SIGNAL(increasedDotSize()), _view, SLOT(increaseDotSize()));
-    connect(this, SIGNAL(decreasedDotSize()), _view, SLOT(decreaseDotSize()));
+    connect(this, &ParticlesView::zoomedIn, _view, &View::zoomIn);
+    connect(this, &ParticlesView::zoomedOut, _view, &View::zoomOut);
+    connect(this, &ParticlesView::increasedDotSize, _view, &View::increaseDotSize);
+    connect(this, &ParticlesView::decreasedDotSize, _view, &View::decreaseDotSize);
 }
 
 void ParticlesView::resizeEvent(QResizeEvent* event)
