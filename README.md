@@ -3,7 +3,7 @@ Implementation of [Electrostatic Halftoning](https://www.mia.uni-saarland.de/Res
 ![preview](./EH1.gif)
 
 ## Features
-* GPU acceleration electrostatic halftoning.
+* GPU accelerated electrostatic halftoning.
 * SVG output.
 
 ## Dependencies
@@ -15,7 +15,7 @@ Implementation of [Electrostatic Halftoning](https://www.mia.uni-saarland.de/Res
 cmake .
 make
 ```
-## Limitation
+## Limitations
 * force field generation is slow; therefore, small input images are recommended.
-* floating-point issues, specially with large number of particles.
-* color image not supported.
+* floating-point arithmetic on large number of points eventually causes issues.
+* greyscale output only.
